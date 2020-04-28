@@ -101,7 +101,7 @@ func (ghsi *SubscriberItem) Start() {
 
 		err := ghsi.doSubscription()
 		if err != nil {
-			klog.Error(err, "Subscription error.")
+			klog.Error(err, " Subscription error.")
 			ghsi.successful = false
 		} else {
 			ghsi.successful = true
@@ -125,7 +125,7 @@ func (ghsi *SubscriberItem) doSubscription() error {
 	//Clone the git repo
 	commitID, err := ghsi.cloneGitRepo()
 	if err != nil {
-		klog.Error(err, "Unable to clone the git repo ", ghsi.Channel.Spec.Pathname)
+		klog.Error(err, " Unable to clone the git repo ", ghsi.Channel.Spec.Pathname)
 		return err
 	}
 
@@ -134,7 +134,7 @@ func (ghsi *SubscriberItem) doSubscription() error {
 
 		err := ghsi.sortClonedGitRepo()
 		if err != nil {
-			klog.Error(err, "Unable to sort helm charts and kubernetes resources from the cloned git repo.")
+			klog.Error(err, " Unable to sort helm charts and kubernetes resources from the cloned git repo.")
 			return err
 		}
 
@@ -148,7 +148,7 @@ func (ghsi *SubscriberItem) doSubscription() error {
 		err = ghsi.subscribeResources(hostkey, syncsource, kvalid, rscPkgMap, ghsi.crdsAndNamespaceFiles)
 
 		if err != nil {
-			klog.Error(err, "Unable to subscribe resource ")
+			klog.Error(err, " Unable to subscribe resource")
 			return err
 		}
 
@@ -157,7 +157,7 @@ func (ghsi *SubscriberItem) doSubscription() error {
 		err = ghsi.subscribeResources(hostkey, syncsource, kvalid, rscPkgMap, ghsi.rbacFiles)
 
 		if err != nil {
-			klog.Error(err, "Unable to subscribe resource")
+			klog.Error(err, " Unable to subscribe resource")
 			return err
 		}
 
@@ -175,7 +175,7 @@ func (ghsi *SubscriberItem) doSubscription() error {
 		err = ghsi.subscribeKustomizations(hostkey, syncsource, kvalid, rscPkgMap)
 
 		if err != nil {
-			klog.Error(err, "Unable to subscribe resource")
+			klog.Error(err, " Unable to subscribe resource")
 			return err
 		}
 
@@ -186,7 +186,7 @@ func (ghsi *SubscriberItem) doSubscription() error {
 		err = ghsi.subscribeHelmCharts(ghsi.indexFile)
 
 		if err != nil {
-			klog.Error(err, "Unable to subscribe helm charts")
+			klog.Error(err, " Unable to subscribe helm charts")
 			return err
 		}
 
