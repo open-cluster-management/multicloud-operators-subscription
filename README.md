@@ -12,32 +12,31 @@
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
-- [Overview](#overview)
-- [Quick Start](#quick-start)
-    - [Subscribe a helm chart](#subscribe-a-helm-chart)
-    - [Troubleshooting](#troubleshooting)
-- [Community, discussion, contribution, and support](#community-discussion-contribution-and-support)
-- [Getting Started](#getting-started)
-    - [Prerequisites](#prerequisites)
-- [Security Response](#security-response)
-- [References](#references)
-    - [multicloud-operators repositories](#multicloud-operators-repositories)
+- [multicloud-operators-subscription?](#multicloud-operators-subscription)
+    - [What is the multicloud-operators-subscription](#what-is-the-multicloud-operators-subscription)
+    - [Getting started](#getting-started)
+      - [Subscribing a Helm chart](#subscribing-a-helm-chart)
+      - [Troubleshooting](#troubleshooting)
+    - [References](#references)
+      - [multicloud-operators repositories](#multicloud-operators-repositories)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
-## Overview
+## What is the multicloud-operators-subscription?
 
-------
+The multicloud-operators-subscription project subscribes resources from channels and applies them to Kubernetes:
 
-Subscribes resources from Channels and apply them to kubernetes
+Go to the [Contributing guide](CONTRIBUTING.md) to learn how to get involved.
 
-## Quick Start
+## Getting started
 
-------
+- Clone and build an image with the [Development guide](docs/development.md).
 
-### Subscribe a helm chart
+- Check the [Security guide](SECURITY.md) if you need to report a security issue.
 
-- Clone the subscription operator repository
+### Subscribing a Helm chart
+
+- Clone the subscription operator with the following repository:
 
 ```shell
 mkdir -p "$GOPATH"/src/github.com/open-cluster-management
@@ -46,25 +45,25 @@ git clone https://github.com/open-cluster-management/multicloud-operators-subscr
 cd "$GOPATH"/src/github.com/open-cluster-management/multicloud-operators-subscription
 ```
 
-- Setup environment and deploy subscription operator
+- Setup environment and deploy subscription operator. Run the following command:
 
 ```shell
 kubectl apply -f ./deploy/standalone
 ```
 
-- Create a Channel and Subscription
+- Create a channel and subscription with the following command:
 
 ```shell
 kubectl apply -f ./examples/helmrepo-channel
 ```
 
-- Subscribe!
+- Subscribe! 
 
 ```shell
 kubectl patch subscriptions.apps.open-cluster-management.io simple --type='json' -p='[{"op": "replace", "path": "/spec/placement/local", "value": true}]'
 ```
 
-Find the nginx pods deployed to current namespace, and the number of backend pods is overrided to 3
+Find the nginx pods deployed to your current namespace, and the number of back-end pods overrides to 3.
 
 ```shell
 % kubectl get pods -l app=nginx-ingress
@@ -75,11 +74,11 @@ nginx-ingress-default-backend-6b8dc9d88f-drt7c   1/1     Running   0          96
 nginx-ingress-default-backend-6b8dc9d88f-n26ls   1/1     Running   0          96s
 ```
 
-Check the [Getting Started](docs/getting_started.md) doc for more details
+Check the [Getting started guide](docs/getting_started.md) for more details.
 
 ### Troubleshooting
 
-- Check operator availability
+- Check operator availability:
 
 ```shell
 % kubectl get deploy,pods
@@ -90,7 +89,7 @@ NAME                                                     READY     STATUS    RES
 pod/multicloud-operators-subscription-557c676479-dh2fg   1/1       Running   0          24s
 ```
 
-- Check Subscription and its status
+- Check the subscription and its status:
 
 ```shell
 % kubectl describe appsub simple
@@ -135,29 +134,15 @@ Status:
 Events:                   <none>
 ```
 
-## Community, discussion, contribution, and support
-
-Check the [CONTRIBUTING Doc](CONTRIBUTING.md) for how to contribute to the repo.
-
-------
-
-## Getting Started
-
-### Prerequisites
-
-Check the [Development Doc](docs/development.md) for how to contribute to the repo.
-
-## Security Response
-
-Check the [Security Doc](SECURITY.md) if you've found a security issue.
-
 ## References
 
 ### multicloud-operators repositories
 
-- [multicloud-operators-application](https://github.com/open-cluster-management/multicloud-operators-application)
-- [multicloud-operators-channel](https://github.com/open-cluster-management/multicloud-operators-channel)
-- [multicloud-operators-deployable](https://github.com/open-cluster-management/multicloud-operators-deployable)
-- [multicloud-operators-placementrule](https://github.com/open-cluster-management/multicloud-operators-placementrule)
-- [multicloud-operators-subscription](https://github.com/open-cluster-management/multicloud-operators-subscription)
-- [multicloud-operators-subscription-release](https://github.com/open-cluster-management/multicloud-operators-subscription-release)
+- Access the following multicloud-operators repositories:
+
+  - [multicloud-operators-application](https://github.com/open-cluster-management/multicloud-operators-application)
+  - [multicloud-operators-channel](https://github.com/open-cluster-management/multicloud-operators-channel)
+  - [multicloud-operators-deployable](https://github.com/open-cluster-management/multicloud-operators-deployable)
+  - [multicloud-operators-placementrule](https://github.com/open-cluster-management/multicloud-operators-placementrule)
+  - [multicloud-operators-subscription](https://github.com/open-cluster-management/multicloud-operators-subscription)
+  - [multicloud-operators-subscription-release](https://github.com/open-cluster-management/multicloud-operators-subscription-release)

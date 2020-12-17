@@ -1,48 +1,44 @@
-# Development Guide
+# Development guide
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
-- [Development Guide](#development-guide)
-    - [Required tools/Binaries](#required-tools/binaries)
-    - [Launch Dev mode](#launch-dev-mode)
+- [Development guide](#development-guide)
+    - [Required tools and binaries](#required-tools-and-binaries)
+    - [Launch dev mode](#launch-dev-mode)
     - [Build a local image](#build-a-local-image)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
-## Required tools/Binaries
+## Required tools and binaries
 
-Multcloud-Operators projects are built with following tools, use following links to get them installed in your env.
+The Multicloud-operators projects are built with following tools. Use the links provided to install them on your environment:
 
-Kubernetes:
+ - Find an environment, or set up Kubernetes version 1.13 and later: [kubernetes.io](https://kubernetes.io/docs/setup/#learning-environment).
 
-- Version 1.13+. Use following [link](https://kubernetes.io/docs/setup/#learning-environment) to find an environment or setup one.
+ - Build with [Go verson 1.13 and later](https://golang.org/dl/).
 
-Build:
+ - Enforce style and formatting with Lint:
 
-- [go v1.13+](https://golang.org/dl/)
+    - [hadolint](https://github.com/hadolint/hadolint#install)
+    - [shellcheck](https://github.com/koalaman/shellcheck#installing)
+    - [yamllint](https://github.com/adrienverge/yamllint#installation)
+    - [helm client](https://helm.sh/docs/using_helm/#install-helm)
+    - [golangci-lint](https://github.com/golangci/golangci-lint#install)
+    - [autopep8](https://github.com/hhatto/autopep8#installation)
+    - [mdl](https://github.com/markdownlint/markdownlint#installation)
+    - [awesome_bot](https://github.com/dkhamsing/awesome_bot#installation)
+    - [sass-lint](https://github.com/sds/scss-lint#installation)
+    - [tslint](https://github.com/palantir/tslint#installation--usage)
+    - [prototool](https://github.com/uber/prototool/blob/dev/docs/install.md)
+    - goimports -  Run `go get -v golang.org/x/tools/cmd/goimports` to install
 
-Lint:
+- Test with [kubebuilder v1.0.8](https://github.com/kubernetes-sigs/kubebuilder/releases/tag/v1.0.8)
 
-- [hadolint](https://github.com/hadolint/hadolint#install)
-- [shellcheck](https://github.com/koalaman/shellcheck#installing)
-- [yamllint](https://github.com/adrienverge/yamllint#installation)
-- [helm client](https://helm.sh/docs/using_helm/#install-helm)
-- [golangci-lint](https://github.com/golangci/golangci-lint#install)
-- [autopep8](https://github.com/hhatto/autopep8#installation)
-- [mdl](https://github.com/markdownlint/markdownlint#installation)
-- [awesome_bot](https://github.com/dkhamsing/awesome_bot#installation)
-- [sass-lint](https://github.com/sds/scss-lint#installation)
-- [tslint](https://github.com/palantir/tslint#installation--usage)
-- [prototool](https://github.com/uber/prototool/blob/dev/docs/install.md)
-- goimports -  Run `go get -v golang.org/x/tools/cmd/goimports` to install
+## Launch dev mode
 
-Test:
-
-- [kubebuilder v1.0.8](https://github.com/kubernetes-sigs/kubebuilder/releases/tag/v1.0.8)
-
-## Launch Dev mode
+Run the following command to launch developer mode:
 
 ```shell
 git clone git@github.com:open-cluster-management/multicloud-operators-subscription.git
@@ -55,6 +51,8 @@ make build
 ```
 
 ## Build a local image
+
+Build a local image by running the following command:
 
 ```shell
 git clone git@github.com:open-cluster-management/multicloud-operators-subscription.git
