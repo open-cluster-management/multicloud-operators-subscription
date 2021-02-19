@@ -182,7 +182,16 @@ func (ns *NsSubscriber) initializeSubscriber(nssubitem *NsSubscriberItem,
 
 	dplReconciler := NewNsDeployableReconciler(hubclient, ns, itemkey)
 
-	nssubitem.deployablecontroller, err = controller.New("sub"+itemkey.String(), ns.manager, controller.Options{Reconciler: dplReconciler})
+	//NewUnmanaged means we will have to start the controller other than
+	//depend on the manager to start up things. This fits into our namespace
+	//subscription model. Plus our current code already handles the start and
+	//stop logic.
+	//
+	//controller-runtime v0.6.2 -> v0.6.3, the controller-runtime made sure the
+	//watch, added after the controller started, will be ignored.
+
+	klog.Infof("created a new controller for subscription %s", itemkey.String())
+	nssubitem.deployablecontroller, err = controller.NewUnmanaged("sub"+itemkey.String(), ns.manager, controller.Options{Reconciler: dplReconciler})
 
 	if err != nil {
 		return errors.Wrap(err, "failed to create deployable controller for namespace subscriber item")
@@ -204,7 +213,7 @@ func (ns *NsSubscriber) initializeSubscriber(nssubitem *NsSubscriberItem,
 
 	secretreconciler := newSecretReconciler(ns, ns.manager, itemkey)
 
-	nssubitem.secretcontroller, err = controller.New("sub"+itemkey.String(), ns.manager, controller.Options{Reconciler: secretreconciler})
+	nssubitem.secretcontroller, err = controller.NewUnmanaged("sub"+itemkey.String(), ns.manager, controller.Options{Reconciler: secretreconciler})
 
 	if err != nil {
 		return errors.Wrap(err, "failed to create secret controller for namespace subscriber item")

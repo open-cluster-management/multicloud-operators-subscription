@@ -40,7 +40,4 @@ require (
 	sigs.k8s.io/kustomize/api v0.6.0
 )
 
-replace (
-	k8s.io/client-go => k8s.io/client-go v0.19.3
-	sigs.k8s.io/controller-runtime => sigs.k8s.io/controller-runtime v0.6.2
-)
+replace k8s.io/client-go => k8s.io/client-go v0.19.3
