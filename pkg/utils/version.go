@@ -26,7 +26,7 @@ import (
 
 // SemverCheck filter Deployable based on the version annotations from Subscription and Deployable.
 // Assume the input version is a string which meets the Semver format(https://semver.org/)
-// SemverCheck: if the subscription version is geater than deploayalbe, then return true, otherwise return false
+// SemverCheck: if the subscription version is geater than deployable, then return true, otherwise return false
 // edge case: if the version of subscription or deployable is empty then return true
 func SemverCheck(vSubStr, vDplStr string) bool {
 	if len(vSubStr) == 0 {

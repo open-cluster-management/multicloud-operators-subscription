@@ -88,7 +88,7 @@ func (r *ReconcileSubscription) doMCMHubReconcile(sub *appv1alpha1.Subscription)
 		return err
 	}
 
-	// if the subscription has the rollingupdate-target annotation, create a new deploayble as the target deployable of the subscription deployable
+	// if the subscription has the rollingupdate-target annotation, create a new deployable as the target deployable of the subscription deployable
 	targetDpl, err := r.createTargetDplForRollingUpdate(sub, targetSub)
 
 	if err != nil {
@@ -554,7 +554,7 @@ func (r *ReconcileSubscription) UpdateDeployablesAnnotation(sub *appv1alpha1.Sub
 
 // clearSubscriptionDpls clear the subscription deployable and its rolling update target deployable if exists.
 func (r *ReconcileSubscription) clearSubscriptionDpls(sub *appv1alpha1.Subscription) error {
-	klog.V(5).Info("No longer hub, deleting sbscription deploayble")
+	klog.V(5).Info("No longer hub, deleting subscription deployable")
 
 	hubdpl := &dplv1alpha1.Deployable{}
 	err := r.Get(context.TODO(), types.NamespacedName{Name: sub.Name + "-deployable", Namespace: sub.Namespace}, hubdpl)
@@ -566,7 +566,7 @@ func (r *ReconcileSubscription) clearSubscriptionDpls(sub *appv1alpha1.Subscript
 			if owner.UID == sub.UID {
 				err = r.Delete(context.TODO(), hubdpl)
 				if err != nil {
-					klog.V(5).Infof("Error in deleting sbuscription target deploayble: %#v, err: %#v ", hubdpl, err)
+					klog.V(5).Infof("Error in deleting subscription target deployable: %#v, err: %#v ", hubdpl, err)
 					return err
 				}
 			}
@@ -580,7 +580,7 @@ func (r *ReconcileSubscription) clearSubscriptionDpls(sub *appv1alpha1.Subscript
 
 // clearSubscriptionTargetDpls clear the subscription target deployable if exists.
 func (r *ReconcileSubscription) clearSubscriptionTargetDpl(sub *appv1alpha1.Subscription) error {
-	klog.V(5).Info("deleting sbscription target deploayble")
+	klog.V(5).Info("deleting subscription target deployable")
 
 	// delete target deployable if exists.
 	hubTargetDpl := &dplv1alpha1.Deployable{}
@@ -593,7 +593,7 @@ func (r *ReconcileSubscription) clearSubscriptionTargetDpl(sub *appv1alpha1.Subs
 			if owner.UID == sub.UID {
 				err = r.Delete(context.TODO(), hubTargetDpl)
 				if err != nil {
-					klog.Infof("Error in deleting sbuscription target deploayble: %#v, err: %v", hubTargetDpl, err)
+					klog.Infof("Error in deleting subscription target deployable: %#v, err: %v", hubTargetDpl, err)
 					return err
 				}
 			}
@@ -978,7 +978,7 @@ func (r *ReconcileSubscription) getSubscriptionDeployables(sub *appv1alpha1.Subs
 	err := r.Client.List(context.TODO(), dplList, dplListOptions)
 
 	if err != nil {
-		klog.Error("Failed to list objects from sbuscription namespace ", sub.Namespace, " err: ", err)
+		klog.Error("Failed to list objects from subscription namespace ", sub.Namespace, " err: ", err)
 		return nil
 	}
 
