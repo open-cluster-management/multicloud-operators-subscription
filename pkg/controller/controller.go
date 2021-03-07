@@ -15,15 +15,15 @@
 package controller
 
 import (
+	"github.com/open-cluster-management/multicloud-operators-subscription/pkg/config"
 	"github.com/open-cluster-management/multicloud-operators-subscription/pkg/utils"
-	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/client-go/rest"
 	"k8s.io/klog"
 	"sigs.k8s.io/controller-runtime/pkg/manager"
 )
 
 // AddToManagerMCMFuncs is a list of functions to add all MCM Controllers (with config to hub) to the Manager
-var AddToManagerMCMFuncs []func(manager.Manager, *rest.Config, *types.NamespacedName, bool) error
+var AddToManagerMCMFuncs []func(manager.Manager, *rest.Config, config.SubscriptionCMDoptions) error
 
 // AddToManagerFuncs is a list of functions to add all Controllers to the Manager
 var AddToManagerFuncs []func(manager.Manager) error
@@ -35,7 +35,7 @@ var AddHelmToManagerFuncs []func(manager.Manager) error
 var AddHubToManagerFuncs []func(manager.Manager) error
 
 // AddToManager adds all Controllers to the Manager
-func AddToManager(m manager.Manager, cfg *rest.Config, syncid *types.NamespacedName, standalone bool) error {
+func AddToManager(m manager.Manager, cfg *rest.Config, ops config.SubscriptionCMDoptions) error {
 	for _, f := range AddToManagerFuncs {
 		if err := f(m); err != nil {
 			return err
@@ -44,7 +44,7 @@ func AddToManager(m manager.Manager, cfg *rest.Config, syncid *types.NamespacedN
 
 	// If remote subscription pod (appmgr) is running in hub, don't add helmrelease controller to the manager,
 	// As there has been a helmrelease controller running in standalone subscription pod
-	if !utils.IsHub(m.GetConfig()) || standalone {
+	if ops.Standalone || !utils.IsHub(m.GetConfig()) {
 		klog.Info("Add helmrelease controller when the remote subscription is NOT running on hub or standalone subscription")
 
 		for _, f := range AddHelmToManagerFuncs {
@@ -55,7 +55,7 @@ func AddToManager(m manager.Manager, cfg *rest.Config, syncid *types.NamespacedN
 	}
 
 	for _, f := range AddToManagerMCMFuncs {
-		if err := f(m, cfg, syncid, standalone); err != nil {
+		if err := f(m, cfg, ops); err != nil {
 			return err
 		}
 	}

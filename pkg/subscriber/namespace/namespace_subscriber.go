@@ -40,6 +40,8 @@ import (
 	dplutils "github.com/open-cluster-management/multicloud-operators-deployable/pkg/utils"
 	appv1alpha1 "github.com/open-cluster-management/multicloud-operators-subscription/pkg/apis/apps/v1"
 	kubesynchronizer "github.com/open-cluster-management/multicloud-operators-subscription/pkg/synchronizer/kubernetes"
+
+	"github.com/open-cluster-management/multicloud-operators-subscription/pkg/config"
 )
 
 // NsSubscriberItem  defines the unit of namespace subscription
@@ -91,12 +93,12 @@ const (
 	secretsyncsource     = "subnssec-" // #nosec G101
 )
 
-// Add does nothing for namespace subscriber, it generates cache for each of the item
-func Add(mgr manager.Manager, hubconfig *rest.Config, syncid *types.NamespacedName, syncinterval int) error {
+// Add does nothing for namespace subscriber, it generates cache for each of the item syncid *types.NamespacedName, syncinterval int
+func Add(mgr manager.Manager, hubconfig *rest.Config, ops config.SubscriptionCMDoptions) error {
 	// No polling, use cache. Add default one for cluster namespace
 	sync := kubesynchronizer.GetDefaultSynchronizer()
 	if sync == nil {
-		if err := kubesynchronizer.Add(mgr, hubconfig, syncid, syncinterval); err != nil {
+		if err := kubesynchronizer.Add(mgr, hubconfig, ops); err != nil {
 			klog.Error("failed to initialize synchronizer for default namespace channel with error:", err)
 			return err
 		}
@@ -114,16 +116,16 @@ func Add(mgr manager.Manager, hubconfig *rest.Config, syncid *types.NamespacedNa
 	//set up bootstrap logic for manged cluster, normally if this controller is runnning
 	// on managed cluster, then the syncid would be <cluster_name/cluster_namespace> such as,
 	//heathen/heathen
-	if syncid.String() != "/" {
-		defaultitem.Channel.Namespace = syncid.Namespace
-		defaultitem.Channel.Spec.Pathname = syncid.Namespace
+	if ops.Syncid.String() != "/" {
+		defaultitem.Channel.Namespace = ops.Syncid.Namespace
+		defaultitem.Channel.Spec.Pathname = ops.Syncid.Namespace
 
 		if err := defaultNsSubscriber.SubscribeNamespaceItem(defaultitem, true); err != nil {
 			klog.Error("failed to initialize default channel to cluster namespace")
 			return err
 		}
 
-		klog.Info("default namespace subscriber with id:", syncid)
+		klog.Info("default namespace subscriber with id:", ops.Syncid)
 	}
 
 	klog.Info("Done setup namespace subscriber")

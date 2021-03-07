@@ -32,6 +32,7 @@ import (
 	mgr "sigs.k8s.io/controller-runtime/pkg/manager"
 
 	"github.com/open-cluster-management/multicloud-operators-subscription/pkg/apis"
+	"github.com/open-cluster-management/multicloud-operators-subscription/pkg/config"
 )
 
 const (
@@ -42,6 +43,10 @@ const (
 var testEnv *envtest.Environment
 var k8sManager mgr.Manager
 var k8sClient client.Client
+var ops = config.SubscriptionCMDoptions{
+	Syncid:       &types.NamespacedName{},
+	SyncInterval: 2,
+}
 
 func TestSubscriptionNamespaceReconcile(t *testing.T) {
 	RegisterFailHandler(Fail)
@@ -84,7 +89,7 @@ var _ = BeforeSuite(func(done Done) {
 	k8sManager, err = mgr.New(cfg, mgr.Options{MetricsBindAddress: "0"})
 	Expect(err).ToNot(HaveOccurred())
 
-	Expect(Add(k8sManager, k8sManager.GetConfig(), &types.NamespacedName{}, 2)).NotTo(HaveOccurred())
+	Expect(Add(k8sManager, k8sManager.GetConfig(), ops)).NotTo(HaveOccurred())
 	go func() {
 		err = k8sManager.Start(ctrl.SetupSignalHandler())
 		Expect(err).ToNot(HaveOccurred())

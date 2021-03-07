@@ -15,18 +15,18 @@
 package subscriber
 
 import (
-	"k8s.io/apimachinery/pkg/types"
+	"github.com/open-cluster-management/multicloud-operators-subscription/pkg/config"
 	"k8s.io/client-go/rest"
 	"sigs.k8s.io/controller-runtime/pkg/manager"
 )
 
 // AddToManagerFuncs is a list of functions to add all Controllers to the Manager
-var AddToManagerFuncs []func(manager.Manager, *rest.Config, *types.NamespacedName, int) error
+var AddToManagerFuncs []func(manager.Manager, *rest.Config, config.SubscriptionCMDoptions) error
 
 // AddToManager adds all Controllers to the Manager
-func AddToManager(m manager.Manager, hubconfig *rest.Config, syncid *types.NamespacedName, syncinterval int) error {
+func AddToManager(m manager.Manager, hubconfig *rest.Config, ops config.SubscriptionCMDoptions) error {
 	for _, f := range AddToManagerFuncs {
-		if err := f(m, hubconfig, syncid, syncinterval); err != nil {
+		if err := f(m, hubconfig, ops); err != nil {
 			return err
 		}
 	}

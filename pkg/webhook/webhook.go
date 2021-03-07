@@ -15,17 +15,18 @@
 package webhook
 
 import (
+	"github.com/open-cluster-management/multicloud-operators-subscription/pkg/config"
 	"k8s.io/client-go/rest"
 	"sigs.k8s.io/controller-runtime/pkg/manager"
 )
 
 // AddToManagerFuncs is a list of functions to add all Controllers to the Manager
-var AddToManagerFuncs []func(manager.Manager, *rest.Config, string, string, bool, bool) error
+var AddToManagerFuncs []func(manager.Manager, *rest.Config, config.SubscriptionCMDoptions) error
 
 // AddToManager adds all Controllers to the Manager
-func AddToManager(m manager.Manager, hubconfig *rest.Config, tlsKeyFile, tlsCrtFile string, disableTLS bool, createService bool) error {
+func AddToManager(m manager.Manager, hubconfig *rest.Config, ops config.SubscriptionCMDoptions) error {
 	for _, f := range AddToManagerFuncs {
-		if err := f(m, hubconfig, tlsKeyFile, tlsCrtFile, disableTLS, createService); err != nil {
+		if err := f(m, hubconfig, ops); err != nil {
 			return err
 		}
 	}

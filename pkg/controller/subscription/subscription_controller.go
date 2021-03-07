@@ -44,6 +44,8 @@ import (
 	subutil "github.com/open-cluster-management/multicloud-operators-subscription/pkg/utils"
 
 	"github.com/open-cluster-management/multicloud-operators-subscription/pkg/utils"
+
+	"github.com/open-cluster-management/multicloud-operators-subscription/pkg/config"
 )
 
 const (
@@ -60,7 +62,7 @@ const (
 // and Start it when the Manager is Started.
 // If standalone = true, it will only reconcile standalone subscriptions without hosting subscription from ACM hub.
 // If standalone = false, it will only reconcile subscriptions that are propagated from ACM hub.
-func Add(mgr manager.Manager, hubconfig *rest.Config, syncid *types.NamespacedName, standalone bool) error {
+func Add(mgr manager.Manager, hubconfig *rest.Config, ops config.SubscriptionCMDoptions) error {
 	hubclient, err := client.New(hubconfig, client.Options{})
 	if err != nil {
 		klog.Error("Failed to generate client to hub cluster with error:", err)
@@ -82,7 +84,7 @@ func Add(mgr manager.Manager, hubconfig *rest.Config, syncid *types.NamespacedNa
 	subs[chnv1.ChannelTypeGit] = ghsub.GetDefaultSubscriber()
 	subs[chnv1.ChannelTypeObjectBucket] = ossub.GetDefaultSubscriber()
 
-	return add(mgr, newReconciler(mgr, hubclient, subs, standalone))
+	return add(mgr, newReconciler(mgr, hubclient, subs, ops.Standalone))
 }
 
 // newReconciler returns a new reconcile.Reconciler

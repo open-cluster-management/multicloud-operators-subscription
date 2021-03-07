@@ -19,6 +19,8 @@ import (
 	"sync"
 	"time"
 
+	"github.com/open-cluster-management/multicloud-operators-subscription/pkg/config"
+	"github.com/open-cluster-management/multicloud-operators-subscription/pkg/utils"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
@@ -29,8 +31,6 @@ import (
 	"k8s.io/klog"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/manager"
-
-	"github.com/open-cluster-management/multicloud-operators-subscription/pkg/utils"
 )
 
 const (
@@ -80,9 +80,9 @@ var (
 var defaultSynchronizer *KubeSynchronizer
 
 // Add creates the default syncrhonizer and add the start function as runnable into manager
-func Add(mgr manager.Manager, hubconfig *rest.Config, syncid *types.NamespacedName, interval int) error {
+func Add(mgr manager.Manager, hubconfig *rest.Config, ops config.SubscriptionCMDoptions) error {
 	var err error
-	defaultSynchronizer, err = CreateSynchronizer(mgr.GetConfig(), hubconfig, mgr.GetScheme(), syncid, interval, defaultExtension)
+	defaultSynchronizer, err = CreateSynchronizer(mgr.GetConfig(), hubconfig, mgr.GetScheme(), ops.Syncid, ops.SyncInterval, defaultExtension)
 
 	if err != nil {
 		klog.Error("Failed to create synchronizer with error: ", err)

@@ -18,6 +18,9 @@ import (
 	"errors"
 	"strings"
 
+	appv1alpha1 "github.com/open-cluster-management/multicloud-operators-subscription/pkg/apis/apps/v1"
+	"github.com/open-cluster-management/multicloud-operators-subscription/pkg/config"
+	kubesynchronizer "github.com/open-cluster-management/multicloud-operators-subscription/pkg/synchronizer/kubernetes"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/apimachinery/pkg/types"
@@ -25,9 +28,6 @@ import (
 	"k8s.io/klog"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/manager"
-
-	appv1alpha1 "github.com/open-cluster-management/multicloud-operators-subscription/pkg/apis/apps/v1"
-	kubesynchronizer "github.com/open-cluster-management/multicloud-operators-subscription/pkg/synchronizer/kubernetes"
 )
 
 type itemmap map[types.NamespacedName]*SubscriberItem
@@ -55,15 +55,15 @@ var githubk8ssyncsource = "subgbk8s-"
 var githubhelmsyncsource = "subgbhelm-"
 
 // Add does nothing for namespace subscriber, it generates cache for each of the item
-func Add(mgr manager.Manager, hubconfig *rest.Config, syncid *types.NamespacedName, syncinterval int) error {
+func Add(mgr manager.Manager, hubconfig *rest.Config, ops config.SubscriptionCMDoptions) error {
 	// No polling, use cache. Add default one for cluster namespace
 	var err error
 
-	klog.V(5).Info("Setting up default github subscriber on ", syncid)
+	klog.V(5).Info("Setting up default github subscriber on ", ops.Syncid)
 
 	sync := kubesynchronizer.GetDefaultSynchronizer()
 	if sync == nil {
-		err = kubesynchronizer.Add(mgr, hubconfig, syncid, syncinterval)
+		err = kubesynchronizer.Add(mgr, hubconfig, ops)
 		if err != nil {
 			klog.Error("Failed to initialize synchronizer for default namespace channel with error:", err)
 			return err
@@ -77,7 +77,7 @@ func Add(mgr manager.Manager, hubconfig *rest.Config, syncid *types.NamespacedNa
 		return err
 	}
 
-	defaultSubscriber = CreateGitHubSubscriber(hubconfig, mgr.GetScheme(), mgr, sync, syncinterval)
+	defaultSubscriber = CreateGitHubSubscriber(hubconfig, mgr.GetScheme(), mgr, sync, ops.SyncInterval)
 	if defaultSubscriber == nil {
 		errmsg := "failed to create default namespace subscriber"
 

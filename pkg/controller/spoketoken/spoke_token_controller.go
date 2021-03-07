@@ -19,6 +19,8 @@ import (
 	"encoding/json"
 	"time"
 
+	"github.com/open-cluster-management/multicloud-operators-subscription/pkg/config"
+	"github.com/open-cluster-management/multicloud-operators-subscription/pkg/utils"
 	ocinfrav1 "github.com/openshift/api/config/v1"
 	"github.com/pkg/errors"
 	corev1 "k8s.io/api/core/v1"
@@ -33,8 +35,6 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/manager"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 	"sigs.k8s.io/controller-runtime/pkg/source"
-
-	"github.com/open-cluster-management/multicloud-operators-subscription/pkg/utils"
 )
 
 const (
@@ -44,8 +44,8 @@ const (
 )
 
 // Add creates a new agent token controller and adds it to the Manager if standalone is false.
-func Add(mgr manager.Manager, hubconfig *rest.Config, syncid *types.NamespacedName, standalone bool) error {
-	if !standalone {
+func Add(mgr manager.Manager, hubconfig *rest.Config, ops config.SubscriptionCMDoptions) error {
+	if !ops.Standalone {
 		hubclient, err := client.New(hubconfig, client.Options{})
 
 		if err != nil {
@@ -53,7 +53,7 @@ func Add(mgr manager.Manager, hubconfig *rest.Config, syncid *types.NamespacedNa
 			return err
 		}
 
-		return add(mgr, newReconciler(mgr, hubclient, syncid, mgr.GetConfig().Host))
+		return add(mgr, newReconciler(mgr, hubclient, ops.Syncid, mgr.GetConfig().Host))
 	}
 
 	return nil

@@ -38,9 +38,9 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/manager"
 
-	"github.com/open-cluster-management/multicloud-operators-subscription/pkg/utils"
-
 	appv1alpha1 "github.com/open-cluster-management/multicloud-operators-subscription/pkg/apis/apps/v1"
+	"github.com/open-cluster-management/multicloud-operators-subscription/pkg/config"
+	"github.com/open-cluster-management/multicloud-operators-subscription/pkg/utils"
 )
 
 const (
@@ -65,11 +65,14 @@ type WebhookListener struct {
 
 var webhookListener *WebhookListener
 
-// Add does nothing for namespace subscriber, it generates cache for each of the item
-func Add(mgr manager.Manager, hubconfig *rest.Config, tlsKeyFile, tlsCrtFile string, disableTLS bool, createService bool) error {
+// Add does nothing for namespace subscriber, it generates cache for each of the item tlsKeyFile, tlsCrtFile string, disableTLS bool, createService bool
+func Add(mgr manager.Manager, hubconfig *rest.Config, ops config.SubscriptionCMDoptions) error {
 	klog.V(2).Info("Setting up webhook listener ...")
 
-	if !disableTLS {
+	tlsKeyFile := ops.TLSKeyFilePathName
+	tlsCrtFile := ops.TLSCrtFilePathName
+
+	if !ops.DisableTLS {
 		dir := "/root/certs"
 
 		if strings.EqualFold(tlsKeyFile, "") || strings.EqualFold(tlsCrtFile, "") {
@@ -87,7 +90,7 @@ func Add(mgr manager.Manager, hubconfig *rest.Config, tlsKeyFile, tlsCrtFile str
 
 	var err error
 
-	webhookListener, err = CreateWebhookListener(mgr.GetConfig(), hubconfig, mgr.GetScheme(), tlsKeyFile, tlsCrtFile, createService)
+	webhookListener, err = CreateWebhookListener(mgr.GetConfig(), hubconfig, mgr.GetScheme(), tlsKeyFile, tlsCrtFile, ops.CreateService)
 
 	if err != nil {
 		klog.Error("Failed to create synchronizer. error: ", err)

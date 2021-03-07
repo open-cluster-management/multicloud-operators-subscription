@@ -15,101 +15,89 @@
 package exec
 
 import (
+	"github.com/open-cluster-management/multicloud-operators-subscription/pkg/config"
 	pflag "github.com/spf13/pflag"
 )
 
-// SubscriptionCMDOptions for command line flag parsing
-type SubscriptionCMDOptions struct {
-	MetricsAddr           string
-	ClusterName           string
-	ClusterNamespace      string
-	HubConfigFilePathName string
-	TLSKeyFilePathName    string
-	TLSCrtFilePathName    string
-	SyncInterval          int
-	DisableTLS            bool
-	Standalone            bool
-	LeaseDurationSeconds  int
-}
-
-var Options = SubscriptionCMDOptions{
+// SubscriptionCMDoptions for command line flag parsing
+var options = config.SubscriptionCMDoptions{
 	MetricsAddr:          "",
 	SyncInterval:         60,
 	LeaseDurationSeconds: 60,
 	Standalone:           false,
 }
 
-// ProcessFlags parses command line parameters into Options
+// ProcessFlags parses command line parameters into options
 func ProcessFlags() {
 	flag := pflag.CommandLine
 	// add flags
 	flag.StringVar(
-		&Options.MetricsAddr,
+		&options.MetricsAddr,
 		"metrics-addr",
-		Options.MetricsAddr,
+		options.MetricsAddr,
 		"The address the metric endpoint binds to.",
 	)
 
 	flag.StringVar(
-		&Options.HubConfigFilePathName,
+		&options.HubConfigFilePathName,
 		"hub-cluster-configfile",
-		Options.HubConfigFilePathName,
+		options.HubConfigFilePathName,
 		"Configuration file pathname to hub kubernetes cluster",
 	)
 
 	flag.StringVar(
-		&Options.ClusterName,
+		&options.ClusterName,
 		"cluster-name",
-		Options.ClusterName,
+		options.ClusterName,
 		"Name of this endpoint.",
 	)
 
 	flag.StringVar(
-		&Options.ClusterNamespace,
+		&options.ClusterNamespace,
 		"cluster-namespace",
-		Options.ClusterNamespace,
+		options.ClusterNamespace,
 		"Cluster Namespace of this endpoint in hub.",
 	)
 
 	flag.IntVar(
-		&Options.SyncInterval,
+		&options.SyncInterval,
 		"sync-interval",
-		Options.SyncInterval,
+		options.SyncInterval,
 		"The interval of housekeeping in seconds.",
 	)
 
 	flag.IntVar(
-		&Options.LeaseDurationSeconds,
+		&options.LeaseDurationSeconds,
 		"lease-duration",
-		Options.LeaseDurationSeconds,
+		options.LeaseDurationSeconds,
 		"The lease duration in seconds.",
 	)
 
 	flag.BoolVar(
-		&Options.Standalone,
+		&options.Standalone,
 		"standalone",
-		Options.Standalone,
+		options.Standalone,
 		"Standalone mode.",
 	)
 
 	flag.StringVar(
-		&Options.TLSKeyFilePathName,
+		&options.TLSKeyFilePathName,
 		"tls-key-file",
-		Options.TLSKeyFilePathName,
+		options.TLSKeyFilePathName,
 		"WebHook event listener TLS key file path.",
 	)
 
 	flag.StringVar(
-		&Options.TLSCrtFilePathName,
+		&options.TLSCrtFilePathName,
 		"tls-crt-file",
-		Options.TLSCrtFilePathName,
+		options.TLSCrtFilePathName,
 		"WebHook event listener TLS cert file path.",
 	)
 
 	flag.BoolVar(
-		&Options.DisableTLS,
+		&options.DisableTLS,
 		"disable-tls",
-		Options.DisableTLS,
+		options.DisableTLS,
 		"Disable TLS on WebHook event listener.",
 	)
 }

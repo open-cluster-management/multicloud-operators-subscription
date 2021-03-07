@@ -28,6 +28,8 @@ import (
 	chnv1alpha1 "github.com/open-cluster-management/multicloud-operators-channel/pkg/apis/apps/v1"
 	dplv1alpha1 "github.com/open-cluster-management/multicloud-operators-deployable/pkg/apis/apps/v1"
 	appv1alpha1 "github.com/open-cluster-management/multicloud-operators-subscription/pkg/apis/apps/v1"
+
+	"github.com/open-cluster-management/multicloud-operators-subscription/pkg/config"
 )
 
 var c client.Client
@@ -35,6 +37,11 @@ var c client.Client
 var id = types.NamespacedName{
 	Name:      "endpoint",
 	Namespace: "default",
+}
+
+var ops = config.SubscriptionCMDoptions{
+	Syncid:       &id,
+	SyncInterval: 2,
 }
 
 var (
@@ -74,7 +81,7 @@ func TestObjectSubscriber(t *testing.T) {
 
 	c = mgr.GetClient()
 
-	g.Expect(Add(mgr, cfg, &id, 2)).NotTo(gomega.HaveOccurred())
+	g.Expect(Add(mgr, cfg, ops)).NotTo(gomega.HaveOccurred())
 	stopMgr, mgrStopped := StartTestManager(mgr, g)
 
 	defer func() {
