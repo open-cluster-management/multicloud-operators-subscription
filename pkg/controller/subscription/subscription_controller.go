@@ -16,6 +16,7 @@ package subscription
 
 import (
 	"context"
+	"fmt"
 	"strings"
 	"time"
 
@@ -225,6 +226,10 @@ func (r *ReconcileSubscription) Reconcile(request reconcile.Request) (reconcile.
 				klog.Errorf("Had error %v while processing the referred secert", err)
 			}
 
+			if err := subutil.DeleteAppsubConfigMap(r.Client, request.NamespacedName); err != nil {
+				klog.Errorf("failed to delete configmap for appsub %s, err: %w", request.NamespacedName, err)
+			}
+
 			return reconcile.Result{}, err
 		}
 		// Error reading the object - requeue the request.
@@ -337,6 +342,12 @@ func (r *ReconcileSubscription) Reconcile(request reconcile.Request) (reconcile.
 
 func (r *ReconcileSubscription) doReconcile(instance *appv1.Subscription) error {
 	var err error
+
+	subKey := types.NamespacedName{Name: instance.GetName(), Namespace: instance.GetNamespace()}
+
+	if err := subutil.CreateAppsubConfigMap(r.Client, subKey); err != nil {
+		return fmt.Errorf("failed to create configmap for appsub %s, err: %w", subKey, err)
+	}
 
 	subitem := &appv1.SubscriberItem{}
 	subitem.Subscription = instance

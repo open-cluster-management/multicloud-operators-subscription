@@ -367,6 +367,81 @@ func CreateHelmCRDeployable(
 	return dpl, nil
 }
 
+func CreateHelmCRUnstructured(
+	repoURL string,
+	packageName string,
+	chartVersions repo.ChartVersions,
+	client client.Client,
+	channel *chnv1.Channel,
+	sub *appv1.Subscription,
+	scheme *runtime.Scheme,
+) (*unstructured.Unstructured, error) {
+	releaseCRName, err := PkgToReleaseCRName(sub, packageName)
+	if err != nil {
+		return nil, err
+	}
+
+	if channel == nil || !IsGitChannel(string(channel.Spec.Type)) {
+		for i := range chartVersions[0].URLs {
+			parsedURL, err := url.Parse(chartVersions[0].URLs[i])
+
+			if err != nil {
+				klog.Error("Failed to parse url with error:", err)
+				return nil, err
+			}
+
+			if parsedURL.Scheme == "local" {
+				//make sure there is one and only one slash
+				repoURL = strings.TrimSuffix(repoURL, "/") + "/"
+				chartVersions[0].URLs[i] = strings.Replace(chartVersions[0].URLs[i], "local://", repoURL, -1)
+			}
+		}
+	}
+
+	helmRelease, err := CreateOrUpdateHelmChart(
+		packageName, releaseCRName, chartVersions, client, channel, sub)
+
+	if err != nil {
+		klog.Error("Failed to create or update helm chart ", packageName, " err:", err)
+		return nil, err
+	}
+
+	err = Override(helmRelease, sub)
+
+	if err != nil {
+		klog.Error("Failed to override ", helmRelease.Name, " err:", err)
+		return nil, err
+	}
+
+	if helmRelease.Spec == nil {
+		spec := make(map[string]interface{})
+
+		err := yaml.Unmarshal([]byte("{\"\":\"\"}"), &spec)
+		if err != nil {
+			klog.Error("Failed to create an empty spec for helm release", helmRelease)
+			return nil, err
+		}
+
+		helmRelease.Spec = spec
+	}
+
+	hrLbls := AddPartOfLabel(sub, helmRelease.Labels)
+	if hrLbls != nil {
+		helmRelease.Labels = hrLbls
+	}
+
+	//TODO might need to add owner reference between release and subscription
+	unsanno := helmRelease.GetAnnotations()
+	unsanno[dplv1.AnnotationLocal] = "true"
+	helmRelease.SetAnnotations(unsanno)
+
+	uns := &unstructured.Unstructured{}
+
+	err = scheme.Convert(helmRelease, uns, nil)
+
+	return uns, err
+}
+
 func getOverrides(packageName string, sub *appv1.Subscription) dplv1.Overrides {
 	dploverrides := dplv1.Overrides{}
 

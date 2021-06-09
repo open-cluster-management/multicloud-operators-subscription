@@ -172,7 +172,7 @@ var _ = Describe("github subscriber reconcile logic", func() {
 	})
 
 	It("should pass resource label selector", func() {
-		subitem := &SubscriberItem{}
+		subitem := &GitSubscriberItem{}
 		subitem.Subscription = githubsub
 		subitem.Channel = githubchn
 
@@ -245,7 +245,7 @@ var _ = Describe("github subscriber reconcile logic", func() {
 
 var _ = Describe("test subscribing to bitbucket repository", func() {
 	It("should be able to clone the bitbucket repo and sort resources", func() {
-		subitem := &SubscriberItem{}
+		subitem := &GitSubscriberItem{}
 		subitem.Subscription = bitbucketsub
 		subitem.Channel = bitbucketchn
 		subitem.synchronizer = defaultSubscriber.synchronizer
@@ -267,7 +267,7 @@ var _ = Describe("test subscribing to bitbucket repository", func() {
 
 var _ = Describe("test subscribing to bitbucket repository", func() {
 	It("should be able to clone the bitbucket repo with skip certificate verification and sort resources", func() {
-		subitem := &SubscriberItem{}
+		subitem := &GitSubscriberItem{}
 		subitem.Subscription = bitbucketsub
 		bitbucketchn.Spec.InsecureSkipVerify = true
 		subitem.Channel = bitbucketchn
@@ -290,7 +290,7 @@ var _ = Describe("test subscribing to bitbucket repository", func() {
 
 var _ = Describe("test subscribe invalid resource", func() {
 	It("should not return error or panic", func() {
-		subitem := &SubscriberItem{}
+		subitem := &GitSubscriberItem{}
 		subitem.Subscription = githubsub
 		subitem.Channel = githubchn
 		subitem.synchronizer = defaultSubscriber.synchronizer
@@ -302,7 +302,7 @@ var _ = Describe("test subscribe invalid resource", func() {
 	})
 
 	It("should clone the target repo", func() {
-		subitem := &SubscriberItem{}
+		subitem := &GitSubscriberItem{}
 		subitem.Subscription = githubsub
 		subitem.Channel = githubchn
 		subitem.synchronizer = defaultSubscriber.synchronizer
@@ -365,7 +365,7 @@ data:
 
 		githubsub.Spec.PackageFilter = packageFilter
 
-		subitem := &SubscriberItem{}
+		subitem := &GitSubscriberItem{}
 		subitem.Subscription = githubsub
 		subitem.Channel = githubchn
 		subitem.synchronizer = defaultSubscriber.synchronizer
@@ -419,7 +419,7 @@ data:
 
 		githubsub.Spec.Package = "chart1"
 
-		subitem := &SubscriberItem{}
+		subitem := &GitSubscriberItem{}
 		subitem.Subscription = githubsub
 		subitem.Channel = githubchn
 		subitem.synchronizer = defaultSubscriber.synchronizer
@@ -529,7 +529,7 @@ var _ = Describe("github subscriber reconcile options", func() {
 		githubsub.SetAnnotations(subAnnotations)
 		githubsub.Spec.PackageFilter = nil
 
-		subitem := &SubscriberItem{}
+		subitem := &GitSubscriberItem{}
 		subitem.Subscription = githubsub
 		subitem.Channel = githubchn
 		subitem.synchronizer = defaultSubscriber.synchronizer

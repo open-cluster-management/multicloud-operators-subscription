@@ -31,7 +31,7 @@ import (
 	"github.com/open-cluster-management/multicloud-operators-subscription/pkg/utils"
 )
 
-type itemmap map[types.NamespacedName]*SubscriberItem
+type itemmap map[types.NamespacedName]*GitSubscriberItem
 
 type SyncSource interface {
 	GetInterval() int
@@ -42,7 +42,7 @@ type SyncSource interface {
 	CleanupByHost(types.NamespacedName, string) error
 }
 
-// Subscriber - information to run namespace subscription
+// Subscriber - information to run git subscriber subscription
 type Subscriber struct {
 	itemmap
 	manager      manager.Manager
@@ -91,7 +91,7 @@ func Add(mgr manager.Manager, hubconfig *rest.Config, syncid *types.NamespacedNa
 // SubscribeItem subscribes a subscriber item with namespace channel
 func (ghs *Subscriber) SubscribeItem(subitem *appv1alpha1.SubscriberItem) error {
 	if ghs.itemmap == nil {
-		ghs.itemmap = make(map[types.NamespacedName]*SubscriberItem)
+		ghs.itemmap = make(map[types.NamespacedName]*GitSubscriberItem)
 	}
 
 	itemkey := types.NamespacedName{Name: subitem.Subscription.Name, Namespace: subitem.Subscription.Namespace}
@@ -100,9 +100,12 @@ func (ghs *Subscriber) SubscribeItem(subitem *appv1alpha1.SubscriberItem) error 
 	ghssubitem, ok := ghs.itemmap[itemkey]
 
 	if !ok {
-		ghssubitem = &SubscriberItem{}
+		ghssubitem = &GitSubscriberItem{}
 		ghssubitem.syncinterval = ghs.syncinterval
 		ghssubitem.synchronizer = ghs.synchronizer
+		ghssubitem.client = ghs.manager.GetClient()
+		ghssubitem.scheme = ghs.manager.GetScheme()
+		ghssubitem.subResourcesReg = map[types.NamespacedName]*utils.SubResources{}
 	}
 
 	subitem.DeepCopyInto(&ghssubitem.SubscriberItem)
@@ -200,6 +203,12 @@ func (ghs *Subscriber) UnsubscribeItem(key types.NamespacedName) error {
 	subitem, ok := ghs.itemmap[key]
 
 	if ok {
+		if childRes, ok := subitem.subResourcesReg[key]; ok {
+			if err := childRes.Set.DeleateAllResource(subitem.client); err != nil {
+				return err
+			}
+		}
+
 		subitem.Stop()
 		delete(ghs.itemmap, key)
 
@@ -235,7 +244,7 @@ func CreateGitHubSubscriber(config *rest.Config, scheme *runtime.Scheme, mgr man
 		synchronizer: kubesync,
 	}
 
-	githubsubscriber.itemmap = make(map[types.NamespacedName]*SubscriberItem)
+	githubsubscriber.itemmap = make(map[types.NamespacedName]*GitSubscriberItem)
 	githubsubscriber.syncinterval = syncinterval
 
 	return githubsubscriber
